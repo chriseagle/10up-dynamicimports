@@ -1,23 +1,27 @@
-import Head from 'next/head';
 import type { GetStaticProps, GetStaticPaths } from 'next';
+import type { VideoPlayerProps } from '@/components/VideoPlayer';
+
+import Head from 'next/head';
 import * as fs from 'fs';
 import parse, { Element, attributesToProps } from 'html-react-parser';
-import VideoPlayer from '@/components/VideoPlayer';
 import { parseProps } from '@/utils/parseProps';
 
-// import dynamic from 'next/dynamic';
-// const VideoPlayer = dynamic(() => import('@/components/VideoPlayer'), {
-//   ssr: false,
-//   loading: () => <div className='video_skeleton'>Loading video...</div>,
-// });
+import Image from '@/components/Image';
+import VideoPlayer from '@/components/VideoPlayer';
 
-const Body = ({
+const componentDictionary: { [key: string]: any } = {
+  videoplayer: VideoPlayer,
+  image: Image,
+  // videoplayerintersection: VideoPlayerIntersection,
+};
+
+const ArticleBody = ({
   headline,
-  articleBody,
+  body,
   subheading,
 }: {
   headline: string;
-  articleBody: string;
+  body: string;
   subheading: string;
 }) => {
   return (
@@ -25,16 +29,17 @@ const Body = ({
       <h2 className='article__headline'>{headline}</h2>
       <p className='article__subheading'>{subheading}</p>
       <div className='article__body'>
-        {parse(articleBody, {
+        {parse(body, {
           replace: (domNode) => {
             if (
               domNode instanceof Element &&
-              domNode.attribs['data-component'] === 'VideoPlayer'
+              typeof componentDictionary[domNode.attribs['data-component']] !==
+                'undefined'
             ) {
-              const props = parseProps<Parameters<typeof VideoPlayer>[0]>(
-                attributesToProps(domNode.attribs)
-              );
-              return <VideoPlayer {...props} />;
+              const props = parseProps<any>(attributesToProps(domNode.attribs));
+              const Component =
+                componentDictionary[domNode.attribs['data-component']];
+              return <Component {...props} />;
             }
           },
         })}
@@ -52,14 +57,14 @@ export default function Page({ body }: { body: string }) {
       </Head>
       <main>
         <header className='header'>
-          <h1>The Newspaper</h1>
+          <h1>The Multiverse Times</h1>
         </header>
-        <Body
+        <ArticleBody
           headline={'Fusce nec tellus sed augue semper porta'}
           subheading={
             'Morbi in dui quis est pulvinar ullamcorper. Nulla facilisi. Integer lacinia sollicitudin massa. Cras metus. Sed aliquet risus a tortor.'
           }
-          articleBody={body}
+          body={body}
         />
       </main>
     </>

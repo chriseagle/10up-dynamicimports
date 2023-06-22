@@ -1,10 +1,9 @@
-const VideoPlayer = ({
-  type,
-  src,
-}: {
+export type VideoPlayerProps = {
   type: string;
   src: string;
-}): React.ReactElement => {
+};
+
+const VideoPlayer = ({ type, src }: VideoPlayerProps): React.ReactElement => {
   if (type === 'youtube') {
     return (
       <div className='video video__youtube'>
