@@ -1,5 +1,4 @@
 import { useInView } from 'react-intersection-observer';
-import { useEffect, useRef, useState } from 'react';
 
 export type VideoPlayerProps = {
   type: string;

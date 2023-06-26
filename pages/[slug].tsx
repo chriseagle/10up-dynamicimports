@@ -1,18 +1,29 @@
 import type { GetStaticProps, GetStaticPaths } from 'next';
-import type { VideoPlayerProps } from '@/components/VideoPlayer';
-
 import Head from 'next/head';
 import * as fs from 'fs';
 import parse, { Element, attributesToProps } from 'html-react-parser';
 import { parseProps } from '@/utils/parseProps';
 
 import Image from '@/components/Image';
-import VideoPlayer from '@/components/VideoPlayer';
+// import VideoPlayer from '@/components/VideoPlayer';
+
+import dynamic from 'next/dynamic';
+const VideoPlayer = dynamic(() => import('@/components/VideoPlayer'), {
+  ssr: false,
+  loading: () => <div className='video_skeleton'></div>,
+});
+const VideoPlayerIntersection = dynamic(
+  () => import('@/components/VideoPlayerIntersection'),
+  {
+    ssr: false,
+    loading: () => <div className='video_skeleton'>Loading...</div>,
+  }
+);
 
 const componentDictionary: { [key: string]: any } = {
   videoplayer: VideoPlayer,
   image: Image,
-  // videoplayerintersection: VideoPlayerIntersection,
+  videoplayerintersection: VideoPlayerIntersection,
 };
 
 const ArticleBody = ({
@@ -57,7 +68,7 @@ export default function Page({ body }: { body: string }) {
       </Head>
       <main>
         <header className='header'>
-          <h1>The Multiverse Times</h1>
+          <h1>The Happy Hour Times</h1>
         </header>
         <ArticleBody
           headline={'Fusce nec tellus sed augue semper porta'}
